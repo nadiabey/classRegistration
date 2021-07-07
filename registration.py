@@ -4,8 +4,8 @@ import time
 import multiprocessing
 import pandas as pd
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -82,22 +82,35 @@ def get_class(x):
     WebDriverWait(driver, 10).until(ec.visibility_of_all_elements_located)
     try:
         exist = driver.find_element_by_xpath("//span[contains(@role, 'alert')]")
-        if "We're sorry" in exist.text:
-            print("Class", x, "has no results")
-            o = open('class overflow.txt', 'a')
-            o.write(x + "\n")
-            o.close()
-            return None
     except NoSuchElementException:
         try:
             className = driver.find_element_by_xpath("//div[contains(@class, 'MuiGrid-root css-1veqt9o MuiGrid-item')]")
         except NoSuchElementException:
-            className = driver.find_element_by_xpath("//div[contains(@class, 'MuiGrid-root css-1veqt9o MuiGrid-item')]")
-        finally:
-            cn = driver.find_element_by_xpath("/html/body/div[1]/main/div/form/div/div[7]/div/div/div/input")
-            for ch in x:
-                cn.send_keys(Keys.BACKSPACE)
-        return className.text
+            return "name not found"
+        else:
+            return className.text
+    else:
+        try:
+            if "We're sorry" in exist.text:
+                print("Class", x, "has no results")
+                o = open('class overflow.txt', 'a')
+                o.write(x + "\n")
+                o.close()
+                return None
+        except StaleElementReferenceException:
+            WebDriverWait(driver, 10, ignored_exceptions=StaleElementReferenceException). \
+                until(ec.presence_of_all_elements_located)
+            exist = driver.find_element_by_xpath("//span[contains(@role, 'alert')]")
+            if "We're sorry" in exist.text:
+                print("Class", x, "has no results")
+                o = open('class overflow.txt', 'a')
+                o.write(x + "\n")
+                o.close()
+                return None
+    finally:
+        cn = driver.find_element_by_xpath("/html/body/div[1]/main/div/form/div/div[7]/div/div/div/input")
+        for ch in x:
+            cn.send_keys(Keys.BACKSPACE)
 
 
 def page_end():
@@ -250,12 +263,13 @@ def run(x, y, z, f, t):
 
 if __name__ == '__main__':
     fallsubject = [x[:-1] for x in open('fall21dept.txt', 'r').readlines()]
+    springsubject = [x[:-1] for x in open('spring21dept.txt', 'r').readlines()]
     term = '2021 Fall Term'
     career = 'Undergraduate'
     first = time.time()
     print("start time:", datetime.datetime.now())
     pool = multiprocessing.Pool()
-    pool.starmap(run, [(term, career, x, x + " fall v5.csv", "d") for x in fallsubject])
+    pool.starmap(run, [(term, career, x, x + " fall v6.csv", "d") for x in fallsubject])
     pool.close()
 
     if os.path.exists('dept overflow.txt') and os.stat('dept overflow.txt').st_size != 0:
@@ -276,5 +290,3 @@ if __name__ == '__main__':
     last = time.time()
     print("end time:", datetime.datetime.now())
     print("time elapsed:", last - first, "seconds")
-
-    # springsubject = [x[:-1] for x in open('spring21dept.txt', 'r').readlines()]
