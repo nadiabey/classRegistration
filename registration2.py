@@ -1,4 +1,4 @@
-import datetime, os, time, multiprocessing, shutil
+import datetime, time, multiprocessing, shutil
 import pandas as pd
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -13,7 +13,6 @@ This version of the script excludes the class_name function in favor of getting 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--window-size=1920x1080")
-chrome_driver = os.getcwd() + r"\\chromedriver.exe"
 driver = webdriver.Chrome(r"/Users/nadiabey/PycharmProjects/classRegistration/chromedriver 2", options=chrome_options)
 
 
