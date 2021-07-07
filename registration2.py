@@ -5,6 +5,9 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.common.by import By
 
 """
 This version of the script excludes the class_name function in favor of getting all course names one time.
@@ -14,7 +17,7 @@ chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--window-size=1920x1080")
 driver = webdriver.Chrome(r"/Users/nadiabey/PycharmProjects/classRegistration/chromedriver 2", options=chrome_options)
-driver.implicitly_wait(10)
+# driver.implicitly_wait(10)
 
 
 def init():
@@ -85,7 +88,6 @@ def num_search(listy):
     """
     get info for class number
     """
-    time.sleep(3)
     temp = []
     for item in listy:
         if "Class Number" in item:
@@ -151,6 +153,8 @@ def input_subject(x):
             return None
     except NoSuchElementException:
         page_end()
+        # WebDriverWait(driver, 10).until(
+        #    ec.presence_of_element_located((By.XPATH, "//span[contains(@class, 'sr-only') and text() == 'Class Number']")))
         time.sleep(1)
         secNum = driver.find_elements_by_xpath("//span[contains(@class, 'sr-only')]")
         y = [z.text for z in secNum]
@@ -224,7 +228,7 @@ def repeat(l):
 if __name__ == '__main__':
     fall = [x[:-1] for x in open('fall21dept.txt', 'r').readlines()]
     day = datetime.datetime.today().day
-    while datetime.datetime.now() < datetime.datetime(2021, 7, day, 8, 00):
+    while datetime.datetime.now() < datetime.datetime(2021, 7, day, 17, 10):
         repeat(fall)
-        if datetime.datetime.now() > datetime.datetime(2021, 7, day, 8, 00):
+        if datetime.datetime.now() > datetime.datetime(2021, 7, day, 17, 10):
             break
