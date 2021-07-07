@@ -1,6 +1,7 @@
 import pandas as pd
 from selenium import webdriver
 import time
+import datetime
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 chrome_options = Options()
@@ -86,6 +87,7 @@ if __name__ == '__main__':
     get_career("Undergraduate")
     show_all()
     start = time.time()
+    print("start time:", datetime.datetime.now())
     for x in nums:
         obj = get_class(x)
         print(obj)
@@ -93,5 +95,6 @@ if __name__ == '__main__':
         digits.append(obj[1])
     end = time.time()
     print("time: ", end - start)
+    print("end time:", datetime.datetime.now())
     final = pd.DataFrame({"Name": courses, "Course Number": digits})
     final.to_csv('classnumberstest.csv')

@@ -1,4 +1,4 @@
-import datetime, time, multiprocessing, shutil
+import datetime, time, multiprocessing, shutil, os
 import pandas as pd
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -84,6 +84,7 @@ def num_search(listy):
     """
     get info for class number
     """
+    time.sleep(3)
     temp = []
     for item in listy:
         if "Class Number" in item:
@@ -92,7 +93,7 @@ def num_search(listy):
             section = item[0:item.find(',')]
             temp.append(section)  # index 0
             temp.append(num)  # index 1
-            o = open('class numbers.txt','a')
+            o = open('class numbers.txt', 'a')
             o.write(num + "\n")
             o.close()
 
@@ -200,19 +201,28 @@ def run(x, y, z, f):
         to_file(f, df)
 
 
-if __name__ == '__main__':
-    fall = [x[:-1] for x in open('fall21dept.txt', 'r').readlines()]
+def repeat(l):
     term = '2021 Fall Term'
     career = 'Undergraduate'
     first = time.time()
-    print("start time:", datetime.datetime.now())
     pool = multiprocessing.Pool()
-    pool.starmap(run, [(term, career, x, x + " fall v7.csv") for x in fall])
+    pool.starmap(run, [(term, career, x,
+                        os.path.join(r'/Users/nadiabey/PycharmProjects/classRegistration/data/',
+                                     x + ' fall 2021.csv')) for x in l])
     pool.close()
     driver.quit()
     last = time.time()
-    shutil.copy('class numbers.txt','class numbers ' + str(datetime.datetime.now()) + '.txt')
-    f = open('class numbers.txt', 'w')
+    shutil.copy('class numbers.txt', os.path.join(r'/Users/nadiabey/PycharmProjects/classRegistration/data/',
+                                                  'class numbers ' + str(datetime.datetime.now()) + '.txt'))
+    f = open('class numbers.txt', 'w')  # clear file
     f.close()
-    print("end time:", datetime.datetime.now())
     print("time elapsed:", last - first, "seconds")
+
+
+if __name__ == '__main__':
+    fall = [x[:-1] for x in open('fall21dept.txt', 'r').readlines()]
+    day = datetime.datetime.today().day
+    while datetime.datetime.now() < datetime.datetime(2021, 7, day, 23, 59):
+        repeat(fall)
+        if datetime.datetime.now() > datetime.datetime(2021, 7, day, 23, 59):
+            break
