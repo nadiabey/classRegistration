@@ -17,7 +17,7 @@ chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--window-size=1920x1080")
 driver = webdriver.Chrome(r"/Users/nadiabey/PycharmProjects/classRegistration/chromedriver 2", options=chrome_options)
-# driver.implicitly_wait(10)
+driver.implicitly_wait(10)
 
 
 def init():
@@ -153,9 +153,7 @@ def input_subject(x):
             return None
     except NoSuchElementException:
         page_end()
-        # WebDriverWait(driver, 10).until(
-        #    ec.presence_of_element_located((By.XPATH, "//span[contains(@class, 'sr-only') and text() == 'Class Number']")))
-        time.sleep(1)
+        time.sleep(3)
         secNum = driver.find_elements_by_xpath("//span[contains(@class, 'sr-only')]")
         y = [z.text for z in secNum]
         info = num_search(y)
@@ -228,7 +226,7 @@ def repeat(l):
 if __name__ == '__main__':
     fall = [x[:-1] for x in open('fall21dept.txt', 'r').readlines()]
     day = datetime.datetime.today().day
-    while datetime.datetime.now() < datetime.datetime(2021, 7, day, 17, 10):
+    while datetime.datetime.now() < datetime.datetime(2021, 7, day, 8, 0):
         repeat(fall)
-        if datetime.datetime.now() > datetime.datetime(2021, 7, day, 17, 10):
+        if datetime.datetime.now() > datetime.datetime(2021, 7, day, 8, 0):
             break
