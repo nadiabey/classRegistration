@@ -214,6 +214,7 @@ def run(x, y, z, f):
 def repeat(l):
     term = '2021 Fall Term'
     career = 'Undergraduate'
+    print("start time: ", str(datetime.datetime.now()))
     first = time.time()
     pool = multiprocessing.Pool()
     pool.starmap(run, [(term, career, x,
@@ -222,6 +223,7 @@ def repeat(l):
     pool.close()
     driver.quit()
     last = time.time()
+    print("end time: ", str(datetime.datetime.now()))
     print("time elapsed:", last - first, "seconds")
 
 
