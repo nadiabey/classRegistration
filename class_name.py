@@ -2,8 +2,10 @@ import pandas as pd
 from selenium import webdriver
 import time
 import datetime
+import os
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
+
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--window-size=1920x1080")
@@ -71,16 +73,27 @@ def get_class(x):
     classNumber.send_keys(x)
     search_button()
     time.sleep(4)
-    className = driver.find_element_by_xpath("//div[contains(@class, 'MuiGrid-root css-1veqt9o MuiGrid-item')]")
+    # className = driver.find_element_by_xpath("//div[contains(@class, 'MuiGrid-root css-1veqt9o MuiGrid-item')]")
+    details = driver.find_elements_by_xpath("//div[contains(@class, 'MuiGrid-root MuiGrid-container')]")
+    details = [x.text for x in details]
+    findtopic = details[1].split("\n")
+    topic = findtopic[14]
+    className = findtopic[0]
     cn = driver.find_element_by_xpath("/html/body/div[1]/main/div/form/div/div[7]/div/div/div/input")
-    for ch in x:
+    for i in range(len(str(x))):
         cn.send_keys(Keys.BACKSPACE)
-    return className.text, x
+    return className, topic, x
 
 
-if __name__ == '__main__':
-    nums = [x[:-1] for x in open('class numbers 2021-07-06 20:22:02.635226.txt')]
+def get_list(file):
+    df = pd.read_csv(file)
+    numbers = df['Class Number'].unique().tolist()
+    return numbers
+
+
+def find(x):
     courses = []
+    topics = []
     digits = []
     init()
     get_term("2021 Fall Term")
@@ -88,13 +101,26 @@ if __name__ == '__main__':
     show_all()
     start = time.time()
     print("start time:", datetime.datetime.now())
-    for x in nums:
-        obj = get_class(x)
+    result = get_list(x)
+    for item in result:
+        obj = get_class(item)
         print(obj)
         courses.append(obj[0])
-        digits.append(obj[1])
+        topics.append(obj[1])
+        digits.append(obj[2])
     end = time.time()
     print("time: ", end - start)
     print("end time:", datetime.datetime.now())
-    final = pd.DataFrame({"Name": courses, "Course Number": digits})
-    final.to_csv('classnumberstest.csv')
+    df = pd.DataFrame({"Course Name": courses, "Topic": topics, "Course Number": digits})
+    filename = x[:x.index('f')] + "class numbers.csv"
+    df.to_csv(filename, index=False)
+
+
+if __name__ == '__main__':
+    depts = [x[:-1] for x in open('fall21dept.txt')]
+    files = [os.path.join(r'/Users/nadiabey/PycharmProjects/classRegistration/data/',
+                          x + ' fall 2021.csv') for x in depts]
+    #test_list = [os.path.join(r'/Users/nadiabey/PycharmProjects/classRegistration/data/',
+    #                          z + ' fall 2021.csv') for z in ['UNIV -']]
+    for x in files:
+        find(x)

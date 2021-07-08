@@ -1,4 +1,4 @@
-import datetime, time, multiprocessing, shutil, os
+import datetime, time, multiprocessing, os
 import pandas as pd
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -82,6 +82,8 @@ def page_end():
         ActionChains(driver).send_keys(Keys.END).perform()
         time.sleep(4)
         page_end()
+    finally:
+        time.sleep(3)
 
 
 def num_search(listy):
@@ -96,18 +98,22 @@ def num_search(listy):
             section = item[0:item.find(',')]
             temp.append(section)  # index 0
             temp.append(num)  # index 1
-            o = open('class numbers.txt', 'a')
-            o.write(num + "\n")
-            o.close()
 
         if "seats" in item:
             # reserved and waitlist use rfind because 'seats' is present multiple times
             if "reserved" in item:
-                avail = int(item[item.find('d,') + 3:item.find('of') - 1])
-                total = int(item[item.find('of') + 3:item.rfind('seats') - 1])
-                temp.append(avail)  # index 2
-                temp.append(total)  # index 3
-                temp.append("Yes")  # index 4
+                if "Closed" not in item:
+                    avail = int(item[item.find('d,') + 3:item.find('of') - 1])
+                    total = int(item[item.find('of') + 3:item.rfind('seats') - 1])
+                    temp.append(avail)  # index 2
+                    temp.append(total)  # index 3
+                    temp.append("Yes")  # index 4
+                else:
+                    avail = int(item[item.rfind('d,') + 3:item.find('of') - 1])
+                    total = int(item[item.find('of') + 3:item.rfind('seats') - 1])
+                    temp.append(avail)  # index 2
+                    temp.append(total)  # index 3
+                    temp.append("Yes")  # index 4
             elif "waitlist" in item:
                 avail = int(item[item.find('e.') + 3:item.rfind('of') - 1])
                 total = int(item[item.rfind('of') + 3:item.rfind('seats') - 1])
@@ -216,10 +222,6 @@ def repeat(l):
     pool.close()
     driver.quit()
     last = time.time()
-    shutil.copy('class numbers.txt', os.path.join(r'/Users/nadiabey/PycharmProjects/classRegistration/data/',
-                                                  'class numbers ' + str(datetime.datetime.now()) + '.txt'))
-    f = open('class numbers.txt', 'w')  # clear file
-    f.close()
     print("time elapsed:", last - first, "seconds")
 
 
