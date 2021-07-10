@@ -178,7 +178,10 @@ def input_subject(x):
 
 def to_file(f, data):
     try:
-        file = open(f)
+        file = open(f, 'a+')
+        last = file.readlines()[-1]
+        if last[-1] != "\n":
+            file.write("\n")
         file.close()
     except IOError:
         # if file does not exist create it
@@ -230,7 +233,7 @@ def repeat(l):
 if __name__ == '__main__':
     fall = [x[:-1] for x in open('fall21dept.txt', 'r').readlines()]
     day = datetime.datetime.today().day
-    while datetime.datetime.now() < datetime.datetime(2021, 7, day, 8, 0):
+    while datetime.datetime.now() < datetime.datetime(2021, 7, day, 12, 0):
         repeat(fall)
-        if datetime.datetime.now() > datetime.datetime(2021, 7, day, 8, 0):
+        if datetime.datetime.now() > datetime.datetime(2021, 7, day, 12, 0):
             break
