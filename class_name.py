@@ -73,7 +73,6 @@ def get_class(x):
     classNumber.send_keys(x)
     search_button()
     time.sleep(4)
-    # className = driver.find_element_by_xpath("//div[contains(@class, 'MuiGrid-root css-1veqt9o MuiGrid-item')]")
     details = driver.find_elements_by_xpath("//div[contains(@class, 'MuiGrid-root MuiGrid-container')]")
     details = [x.text for x in details]
     findtopic = details[1].split("\n")
