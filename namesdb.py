@@ -50,10 +50,11 @@ def get_class(x):
         topic = findtopic[14]
         nt = findtopic[0].split(" | ")
         className = nt[0]
-        catnum = nt[1]
-        return className, catnum, topic, x
+        dept = nt[1].split(" ")[0]
+        catnum = nt[1].split(" ")[1]
+        return className, dept, catnum, topic, x
     except IndexError:
-        return "not found", "NA", "NA", x
+        return "not found", "NA", "NA", "NA", x
 
 
 def get_numbers(dept):
@@ -68,11 +69,12 @@ def get_numbers(dept):
 def classtable():
     table = """ CREATE TABLE IF NOT EXISTS courses (
     course_name text,
+    department text,
     catalog_num text,
     topic text,
     course_number integer
     );"""
-    conn2 = sqlite3.connect("/Users/nadiabey/PycharmProjects/classRegistration/fallclasses2.db")
+    conn2 = sqlite3.connect("/Users/nadiabey/PycharmProjects/classRegistration/classes.db")
     if conn2 is not None:
         try:
             c = conn2.cursor()
@@ -85,8 +87,8 @@ def classtable():
 
 
 def addtodb(vals):
-    conn2 = sqlite3.connect("/Users/nadiabey/PycharmProjects/classRegistration/fallclasses2.db")
-    add = """ INSERT INTO courses values(?,?,?,?)"""
+    conn2 = sqlite3.connect("/Users/nadiabey/PycharmProjects/classRegistration/classes.db")
+    add = """ INSERT INTO courses values(?,?,?,?,?)"""
     cur = conn2.cursor()
     for x in vals:
         cur.execute(add, x)
@@ -126,7 +128,7 @@ def main(listy):
 
 if __name__ == '__main__':
     fall = [x[:-1] for x in open('fall21dept.txt', 'r').readlines()]
-    # main(fall)
-    testlist = ['AAAS -']
-    for x in testlist:
-        find("2021 Fall Term", "Undergraduate", x)
+    main(fall)
+    #testlist = ['AAAS -']
+    #for x in testlist:
+    #    find("2021 Fall Term", "Undergraduate", x)
